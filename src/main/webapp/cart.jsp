@@ -25,7 +25,7 @@
 </head>
 <body>
     <h1>Your Shopping Cart</h1>
-
+ 
     <c:if test="${not empty cart}">
         <c:forEach var="item" items="${cart}">
             <div class="cart-item">
