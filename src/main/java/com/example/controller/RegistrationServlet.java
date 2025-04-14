@@ -85,19 +85,20 @@ public class RegistrationServlet extends HttpServlet {
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
             conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
-            String sql = "INSERT INTO users (username, password, email) VALUES (?, ?, ?)";
+            String sql = "INSERT INTO users (username, password, email, role) VALUES (?, ?, ?, ?)"; // Added 'role'
             pstmt = conn.prepareStatement(sql);
             pstmt.setString(1, username);
             pstmt.setString(2, hashedPassword);
             pstmt.setString(3, email);
+            pstmt.setString(4, "admin"); // Set the default role
             int affectedRows = pstmt.executeUpdate();
             return affectedRows > 0;
         } catch (SQLException | ClassNotFoundException e) {
             e.printStackTrace();
             return false;
         } finally {
-            try { if (pstmt != null) pstmt.close(); } catch (SQLException se2) {}
-            try { if (conn != null) conn.close(); } catch (SQLException se) {}
+            try { if (pstmt != null) pstmt.close(); } catch (SQLException se2) { se2.printStackTrace(); }
+            try { if (conn != null) conn.close(); } catch (SQLException se) { se.printStackTrace(); }
         }
     }
 

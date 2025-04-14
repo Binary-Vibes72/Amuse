@@ -1,11 +1,18 @@
 package com.example.model;
 
-public class Product {
+import java.io.Serializable;
+
+public class Product implements Serializable {
+    private static final long serialVersionUID = 1L;
+    private int productId;
     private String name;
     private String description;
     private double price;
     private String imageUrl;
-    private int productId;
+
+    public Product() {
+        // Default constructor
+    }
     
     // Constructor
     public Product(int productId, String name, String description, double price, String imageUrl) {
@@ -16,7 +23,11 @@ public class Product {
         this.imageUrl = imageUrl;
     }
 
-    // Getters (we'll need these to access the product data)
+    // Getters
+    public int getProductId() {
+        return productId;
+    }
+
     public String getName() {
         return name;
     }
@@ -33,11 +44,11 @@ public class Product {
         return imageUrl;
     }
 
-    public int getProductId() {
-    	return productId;
+    // Setters
+    public void setProductId(int productId) {
+        this.productId = productId;
     }
 
-    // Setters (optional, depending on whether you need to modify product data after creation)
     public void setName(String name) {
         this.name = name;
     }
@@ -53,9 +64,4 @@ public class Product {
     public void setImageUrl(String imageUrl) {
         this.imageUrl = imageUrl;
     }
-    
-    public void setProductId(int productId) {
-        this.productId = productId;
-    }
-    
 }

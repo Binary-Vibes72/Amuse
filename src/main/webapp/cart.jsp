@@ -21,23 +21,39 @@
         .cart-item-details {
             flex-grow: 1;
         }
+        .quantity-input {
+            width: 50px;
+            padding: 5px;
+            margin-left: 10px;
+        }
     </style>
 </head>
 <body>
     <h1>Your Shopping Cart</h1>
- 
+
     <c:if test="${not empty cart}">
-        <c:forEach var="item" items="${cart}">
-            <div class="cart-item">
-                <img src="${item.product.imageUrl}" alt="${item.product.name}">
-                <div class="cart-item-details">
-                    <h3>${item.product.name}</h3>
-                    <p>Price: $${item.product.price}</p>
-                    <p>Quantity: ${item.quantity}</p>
-                    <p><a href="remove-from-cart?productId=${item.product.productId}">Remove</a></p>
+        <form action="update-cart" method="post">
+            <c:forEach var="item" items="${cart}">
+                <div class="cart-item">
+                    <img src="${item.product.imageUrl}" alt="${item.product.name}">
+                    <div class="cart-item-details">
+                        <h3>${item.product.name}</h3>
+                        <p>Price: $${item.product.price}</p>
+                        <p>
+                            Quantity:
+                            <input type="number" class="quantity-input" name="quantity-${item.product.productId}" value="${item.quantity}" min="1">
+                        </p>
+                        <p><a href="remove-from-cart?productId=${item.product.productId}">Remove</a></p>
+                    </div>
                 </div>
-            </div>
-        </c:forEach>
+            </c:forEach>
+            <button type="submit">Update Cart</button>
+            <hr>
+            <p><strong>Total Items:</strong> ${totalQuantity}</p>
+            <p><strong>Total Price:</strong> $${totalPrice}</p>
+            <br>
+            <a href="shipping-info">Proceed to Checkout</a>
+        </form>
     </c:if>
 
     <c:if test="${empty cart}">

@@ -1,11 +1,11 @@
 package com.example.controller;
 
-import java.sql.Statement; // Add this import
 import com.example.model.Product;
-import com.example.model.User; // Import the User model
+import com.example.model.User;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -16,6 +16,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import org.apache.commons.dbutils.DbUtils; // Import for resource closing
 
 @WebServlet("/products")
 public class ProductListServlet extends HttpServlet {
@@ -25,53 +26,51 @@ public class ProductListServlet extends HttpServlet {
     private static final String DB_PASSWORD = "";
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        HttpSession session = request.getSession(false);
+        HttpSession session = request.getSession();
         User loggedInUser = (User) session.getAttribute("loggedInUser");
 
         if (loggedInUser != null) {
-            // User is logged in, proceed to fetch and display products
-            List<Product> productList = new ArrayList<>();
-            Connection conn = null;
-            Statement stmt = null;
-            ResultSet rs = null;
-
-            try {
-                Class.forName("com.mysql.cj.jdbc.Driver");
-                conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
-                String sql = "SELECT product_id, name, description, price, image_url FROM products";
-                stmt = conn.createStatement();
-                rs = stmt.executeQuery(sql);
-
-                while (rs.next()) {
-                    int id = rs.getInt("product_id");
-                    String name = rs.getString("name");
-                    String description = rs.getString("description");
-                    double price = rs.getDouble("price");
-                    String imageUrl = rs.getString("image_url");
-                    Product product = new Product(id, name, description, price, imageUrl);
-                    productList.add(product);
-                }
-
+            List<Product> productList = getProductsFromDatabase(request, response); // Pass request and response
+            if (productList != null) {
                 request.setAttribute("products", productList);
                 request.getRequestDispatcher("/product_list.jsp").forward(request, response);
-
-            } catch (SQLException se) {
-                se.printStackTrace();
-                request.setAttribute("errorMessage", "Error fetching products from the database.");
-                request.getRequestDispatcher("/error.jsp").forward(request, response);
-            } catch (ClassNotFoundException e) {
-                e.printStackTrace();
-                request.setAttribute("errorMessage", "MySQL JDBC Driver not found.");
-                request.getRequestDispatcher("/error.jsp").forward(request, response);
-            } finally {
-                try { if (rs != null) rs.close(); } catch (SQLException se2) {}
-                try { if (stmt != null) stmt.close(); } catch (SQLException se2) {}
-                try { if (conn != null) conn.close(); } catch (SQLException se) {}
-            }
+            } // else:  Handled in getProductsFromDatabase
         } else {
-            // User is not logged in, redirect to the login page
             response.sendRedirect("login");
         }
+    }
+
+    private List<Product> getProductsFromDatabase(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        List<Product> productList = new ArrayList<>();
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+            String sql = "SELECT product_id, name, description, price, image_url FROM products";
+            pstmt = conn.prepareStatement(sql);
+            rs = pstmt.executeQuery();
+
+            while (rs.next()) {
+                int id = rs.getInt("product_id");
+                String name = rs.getString("name");
+                String description = rs.getString("description");
+                double price = rs.getDouble("price");
+                String imageUrl = rs.getString("image_url");
+                Product product = new Product(id, name, description, price, imageUrl);
+                productList.add(product);
+            }
+        } catch (SQLException | ClassNotFoundException e) {
+            e.printStackTrace();
+            request.setAttribute("errorMessage", "Error fetching products from the database: " + e.getMessage());
+            request.getRequestDispatcher("/error.jsp").forward(request, response);
+            return null;
+        } finally {
+            DbUtils.closeQuietly(conn, pstmt, rs);
+        }
+        return productList;
     }
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {

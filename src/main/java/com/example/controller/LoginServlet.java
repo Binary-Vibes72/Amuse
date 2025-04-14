@@ -1,6 +1,6 @@
 package com.example.controller;
 
-import com.example.model.User; // We might create a User model later
+import com.example.model.User;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -35,7 +35,13 @@ public class LoginServlet extends HttpServlet {
                 // Authentication successful, create a session
                 HttpSession session = request.getSession();
                 session.setAttribute("loggedInUser", user); // Store user object in session
-                response.sendRedirect("products"); // Redirect to the product list page
+
+                // Check the user's role and redirect accordingly
+                if ("admin".equals(user.getRole())) {
+                    response.sendRedirect("admin/dashboard"); // Redirect to the admin dashboard
+                } else {
+                    response.sendRedirect("products"); // Redirect to the product list page for other users
+                }
                 return;
             } else {
                 errorMessage = "Invalid username or password.";
@@ -48,36 +54,31 @@ public class LoginServlet extends HttpServlet {
     }
 
     private User authenticateUser(String username, String password) {
-        Connection conn = null;
-        PreparedStatement pstmt = null;
-        ResultSet rs = null;
         User user = null;
-
-        try {
+        String sql = "SELECT user_id, username, password, email, role FROM users WHERE username = ?";
+        try (Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
             Class.forName("com.mysql.cj.jdbc.Driver");
-            conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
-            String sql = "SELECT user_id, username, password, email FROM users WHERE username = ?";
-            pstmt = conn.prepareStatement(sql);
             pstmt.setString(1, username);
-            rs = pstmt.executeQuery();
-
-            if (rs.next()) {
-                String storedHashedPassword = rs.getString("password");
-                if (BCrypt.checkpw(password, storedHashedPassword)) {
-                    // Passwords match, create a User object
-                    user = new User(); // For now, a basic User object
-                    user.setUserId(rs.getInt("user_id"));
-                    user.setUsername(rs.getString("username"));
-                    user.setEmail(rs.getString("email"));
-                    // We don't store the password in the User object for security
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) {
+                    String storedHashedPassword = rs.getString("password");
+                    String roleFromDB = rs.getString("role");
+                    System.out.println("Role retrieved from DB for user " + username + ": " + roleFromDB);
+                    if (BCrypt.checkpw(password, storedHashedPassword)) {
+                        // Passwords match, create a User object with the role
+                        user = new User(
+                                rs.getInt("user_id"),
+                                rs.getString("username"),
+                                storedHashedPassword, // We don't need the plain password anymore
+                                rs.getString("email"),
+                                rs.getString("role")
+                        );
+                    }
                 }
             }
         } catch (SQLException | ClassNotFoundException e) {
             e.printStackTrace();
-        } finally {
-            try { if (rs != null) rs.close(); } catch (SQLException se2) {}
-            try { if (pstmt != null) pstmt.close(); } catch (SQLException se2) {}
-            try { if (conn != null) conn.close(); } catch (SQLException se) {}
         }
         return user;
     }

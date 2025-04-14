@@ -18,7 +18,19 @@ public class CartServlet extends HttpServlet {
         HttpSession session = request.getSession();
         List<CartItem> cart = (List<CartItem>) session.getAttribute("cart");
 
+        int totalQuantity = 0;
+        double totalPrice = 0.0;
+
+        if (cart != null) {
+            for (CartItem item : cart) {
+                totalQuantity += item.getQuantity();
+                totalPrice += item.getQuantity() * item.getProduct().getPrice();
+            }
+        }
+
         request.setAttribute("cart", cart);
+        request.setAttribute("totalQuantity", totalQuantity);
+        request.setAttribute("totalPrice", String.format("%.2f", totalPrice)); // Format to 2 decimal places
         request.getRequestDispatcher("/cart.jsp").forward(request, response);
     }
 
