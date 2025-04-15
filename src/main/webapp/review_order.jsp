@@ -5,58 +5,121 @@
 <head>
     <meta charset="UTF-8">
     <title>Review Your Order</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f9f9f9;
+        }
+
         .container {
-            width: 600px;
-            margin: 50px auto;
-            padding: 20px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 30px;
+            background-color: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
-        h1, h2 {
+
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #333;
+            font-weight: 700;
+            font-size: 28px;
+        }
+
+        h2 {
             margin-bottom: 20px;
+            color: #444;
+            font-weight: 600;
+            font-size: 22px;
         }
+
         .order-summary {
-            margin-bottom: 20px;
+            margin-bottom: 30px;
+            padding: 20px;
             border: 1px solid #ddd;
-            padding: 10px;
-            border-radius: 5px;
+            border-radius: 10px;
+            background-color: #f9f9f9;
         }
+
         .order-item {
             display: flex;
             justify-content: space-between;
-            margin-bottom: 5px;
+            margin-bottom: 15px;
+            font-size: 16px;
+            color: #555;
         }
-        .shipping-info, .payment-info {
-            margin-bottom: 20px;
+
+        .order-item p {
+            margin: 0;
+        }
+
+        .order-item strong {
+            color: #333;
+        }
+
+        .shipping-info,
+        .payment-info {
+            margin-bottom: 30px;
+            padding: 20px;
             border: 1px solid #ddd;
-            padding: 10px;
-            border-radius: 5px;
+            border-radius: 10px;
+            background-color: #f9f9f9;
         }
-        button[type="submit"] {
-            background-color: #28a745;
+
+        .info-title {
+            font-size: 18px;
+            color: #333;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+
+        .info-details p {
+            font-size: 16px;
+            color: #555;
+            line-height: 1.7;
+        }
+
+        .confirm-button {
+            background-color: #4CAF50;
             color: white;
-            padding: 10px 15px;
             border: none;
-            border-radius: 3px;
+            padding: 12px 25px;
+            border-radius: 6px;
             cursor: pointer;
-            font-size: 1em;
+            font-size: 18px;
+            transition: background-color 0.3s ease;
+            width: 100%;
+            text-align: center;
+            margin-top: 20px;
         }
-        button[type="submit"]:hover {
-            background-color: #218838;
+
+        .confirm-button:hover {
+            background-color: #45a049;
         }
+
         .back-button {
+            margin-top: 20px;
+            text-align: left;
+        }
+
+        .back-button a {
             display: inline-block;
-            background-color: #007bff;
+            background-color: #007BFF;
             color: white;
             padding: 10px 15px;
-            border: none;
-            border-radius: 3px;
-            cursor: pointer;
-            font-size: 1em;
-            margin-right: 10px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-size: 16px;
+            transition: background-color 0.3s ease;
         }
-        .back-button:hover {
+
+        .back-button a:hover {
             background-color: #0056b3;
         }
     </style>
@@ -70,7 +133,7 @@
             <c:forEach var="item" items="${cart}">
                 <div class="order-item">
                     <p>${item.product.name} x ${item.quantity}</p>
-                    <p>$${item.product.price * item.quantity}</p>
+                    <p><strong>$${item.product.price * item.quantity}</strong></p>
                 </div>
             </c:forEach>
             <hr>
@@ -79,22 +142,28 @@
         </div>
 
         <div class="shipping-info">
-            <h2>Shipping Information</h2>
-            <p><strong>Name:</strong> ${shippingName}</p>
-            <p><strong>Address:</strong> ${shippingAddress}, ${shippingCity}, ${shippingState} ${shippingZipCode}, ${shippingCountry}</p>
-            <p><strong>Email:</strong> ${shippingEmail}</p>
+            <h2 class="info-title">Shipping Information</h2>
+            <div class="info-details">
+                <p><strong>Name:</strong> ${shippingName}</p>
+                <p><strong>Address:</strong> ${shippingAddress}, ${shippingCity}, ${shippingState} ${shippingZipCode}, ${shippingCountry}</p>
+                <p><strong>Email:</strong> ${shippingEmail}</p>
+            </div>
         </div>
 
         <div class="payment-info">
-            <h2>Payment Information</h2>
-            <p><strong>Card Number:</strong> ${paymentCardNumber}</p>
-            <p><strong>Expiry Date:</strong> ${paymentExpiryDate}</p>
+            <h2 class="info-title">Payment Information</h2>
+            <div class="info-details">
+                <p><strong>Card Number:</strong> ${paymentCardNumber}</p>
+                <p><strong>Expiry Date:</strong> ${paymentExpiryDate}</p>
+            </div>
         </div>
 
         <form action="confirm-order" method="post">
-            <button type="submit">Confirm Order</button>
+            <button type="submit" class="confirm-button">Confirm Order</button>
         </form>
-        <a href="payment-info" class="back-button">Back to Payment</a>
+        <div class="back-button">
+            <a href="payment-info">Back to Payment</a>
+        </div>
     </div>
 </body>
 </html>

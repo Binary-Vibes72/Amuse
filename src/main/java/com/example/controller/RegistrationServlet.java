@@ -90,7 +90,7 @@ public class RegistrationServlet extends HttpServlet {
             pstmt.setString(1, username);
             pstmt.setString(2, hashedPassword);
             pstmt.setString(3, email);
-            pstmt.setString(4, "admin"); // Set the default role
+            pstmt.setString(4, "customer"); // Set the default role
             int affectedRows = pstmt.executeUpdate();
             return affectedRows > 0;
         } catch (SQLException | ClassNotFoundException e) {

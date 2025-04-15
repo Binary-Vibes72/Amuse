@@ -1,76 +1,115 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <!DOCTYPE html>
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>User Login</title>
+    <title>Login</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
-        .container {
-            width: 300px;
-            margin: 50px auto;
-            padding: 20px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
+        body {
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f9f9f9;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
         }
-        .form-group {
-            margin-bottom: 15px;
-        }
-        label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: bold;
-        }
-        input[type="text"],
-        input[type="password"] {
-            width: 100%;
-            padding: 8px;
-            border: 1px solid #ddd;
-            border-radius: 3px;
+
+        .login-container {
+            background-color: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            width: 400px;
+            max-width: 100%;
             box-sizing: border-box;
         }
-        button[type="submit"] {
-            background-color: #007bff;
-            color: white;
-            padding: 10px 15px;
-            border: none;
-            border-radius: 3px;
-            cursor: pointer;
-            font-size: 1em;
+
+        .login-title {
+            text-align: center;
+            margin-bottom: 25px;
+            color: #333;
+            font-weight: 700;
+            font-size: 24px;
         }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            box-sizing: border-box;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: #4CAF50;
+        }
+
+        .btn-primary {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            width: 100%;
+            font-size: 18px;
+            transition: background-color 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            background-color: #45a049;
+        }
+
         .error-message {
             color: red;
             margin-top: 10px;
+            font-size: 14px;
         }
-        .success-message {
-            color: green;
-            margin-top: 10px;
+        .register-link {
+        	font-size: 17px;
+        	text-align: center;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>User Login</h1>
-        <c:if test="${not empty errorMessage}">
-            <p class="error-message">${errorMessage}</p>
-        </c:if>
-        <c:if test="${param.registrationSuccess}">
-            <p class="success-message">Registration successful! You can now log in.</p>
-        </c:if>
-        <c:if test="${param.logoutSuccess}">
-            <p class="success-message">You have been successfully logged out.</p>
-        </c:if>
+    <div class="login-container">
+        <h2 class="login-title">Login</h2>
         <form action="login" method="post">
+        	<c:if test="${not empty errorMessage}">
+                <p class="error-message">${errorMessage}</p>
+            </c:if>
             <div class="form-group">
                 <label for="username">Username:</label>
-                <input type="text" id="username" name="username" required>
+                <input type="text" class="form-control" id="username" name="username" required>
             </div>
             <div class="form-group">
                 <label for="password">Password:</label>
-                <input type="password" id="password" name="password" required>
+                <input type="password" class="form-control" id="password" name="password" required>
             </div>
-            <button type="submit">Log In</button>
+            <button type="submit" class="btn-primary">Login</button>
         </form>
-        <p>Don't have an account? <a href="register">Register here</a></p>
+        <p class="register-link">
+            <a href="register">Don't have an account? Register</a> 
+        </p>
     </div>
 </body>
 </html>
